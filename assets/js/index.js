@@ -15,7 +15,7 @@ const populateList = (shift, targetList) => {
   targetList.innerHTML = '';
   shiftGroups[shift].forEach((person) => {
     targetList.innerHTML += `
-      <div class="flex items-center justify-between px-4 py-2 bg-[#f3f3f3] rounded-[8px] text-sm font-semibold cursor-pointer select-none hover:bg-[#e6e6e6] transition duration-300 ease-out">${person.name}</div>
+      <div class="flex items-center justify-between px-4 py-2 bg-[#f3f3f3] rounded-[8px] text-xs font-semibold cursor-pointer select-none hover:bg-[#e6e6e6] transition duration-300 ease-out">${person.name}</div>
     `;
   });
 };
@@ -141,3 +141,23 @@ const addPerson = async () => {
 
 // Add button clicked
 addButton.addEventListener('click', addPerson);
+
+// Check input rota
+const inputRota = document.querySelector('#input-rota');
+const fireButton = document.querySelector('#fire-button');
+const results = document.querySelector('#results');
+
+inputRota.addEventListener('input', function (event) {
+  const typedText = event.target.innerText.trim();
+  if (typedText.length > 0) {
+    fireButton.classList.remove('disabled');
+  } else {
+    fireButton.classList.add('disabled');
+  }
+});
+
+// Fire button clicked
+fireButton.addEventListener('click', () => {
+  results.innerHTML = '';
+  results.innerHTML = inputRota.innerText;
+});
