@@ -5,12 +5,14 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
+    "watch": "browser-sync start --proxy 'http://localhost:3000' --files 'views/**/*.ejs, public/**/*'",
     "build": "npx tailwindcss -i ./src/tailwindcss.css -o ./assets/styles/styles.css --watch"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "browser-sync": "^2.29.3",
     "ejs": "^3.1.9",
     "express": "^4.18.2",
     "nodemon": "^3.0.1",

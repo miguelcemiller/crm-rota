@@ -9,8 +9,71 @@
     <title>CRM Rota</title>
 </head>
 
-<body>
-    <h1 class="underline">Hello, World!</h1>
+<body class="h-screen flex flex-col items-start">
+    <!-- begin:: Schedule -->
+    <div class="flex flex-col w-[250px] h-full px-6 py-6 fixed border-r">
+        <!-- begin::Overflow-y -->
+        <div class="overflow-y-auto">
+            <div class="font-bold text-lg mb-2">Schedule</div>
+
+            <div class="flex flex-col gap-3">
+                <!-- begin:: 10 PM List -->
+                <div>
+                    <div class="flex items-start text-xs mb-2">10 PM</div>
+                    <div id="10pm-list" class="flex flex-col gap-1">
+                        <div class="flex items-center justify-between px-4 py-2 bg-[#f3f3f3] rounded-[8px] text-sm font-semibold cursor-pointer select-none hover:bg-[#e6e6e6] transition duration-300 ease-out">Migs</div>
+                        <div class="flex items-center justify-between px-4 py-2 bg-[#f3f3f3] rounded-[8px] text-sm font-semibold cursor-pointer select-none hover:bg-[#e6e6e6]  transition duration-300 ease-out">Migs</div>
+                    </div>
+                </div>
+                <!-- end::10 PM List -->
+
+                <!-- begin:: 11 PM List -->
+                <div>
+                    <div class="flex items-start text-xs mb-2">11 PM</div>
+                    <div id="10pm-list" class="flex flex-col gap-1">
+                        <div class="flex items-center justify-between px-4 py-2 bg-[#f3f3f3] rounded-[8px] text-sm font-semibold cursor-pointer select-none hover:bg-[#e6e6e6] transition duration-300 ease-out">Ally</div>
+                        <div class="flex items-center justify-between px-4 py-2 bg-[#f3f3f3] rounded-[8px] text-sm font-semibold cursor-pointer select-none hover:bg-[#e6e6e6]  transition duration-300 ease-out">Dani</div>
+                    </div>
+                </div>
+                <!-- end::11 PM List -->
+
+                <!-- begin:: 12 AM List -->
+                <div>
+                    <div class="flex items-start text-xs mb-2">12 AM</div>
+                    <div id="10pm-list" class="flex flex-col gap-1">
+                        <div class="flex items-center justify-between px-4 py-2 bg-[#f3f3f3] rounded-[8px] text-sm font-semibold cursor-pointer select-none hover:bg-[#e6e6e6] transition duration-300 ease-out">Armand</div>
+                        <div class="flex items-center justify-between px-4 py-2 bg-[#f3f3f3] rounded-[8px] text-sm font-semibold cursor-pointer select-none hover:bg-[#e6e6e6]  transition duration-300 ease-out">Wij</div>
+                    </div>
+                </div>
+                <!-- end::12 AM List -->
+
+                <!-- begin:: 1 AM List -->
+                <div>
+                    <div class="flex items-start text-xs mb-2">1 AM</div>
+                    <div id="10pm-list" class="flex flex-col gap-1">
+                        <div class="flex items-center justify-between px-4 py-2 bg-[#f3f3f3] rounded-[8px] text-sm font-semibold cursor-pointer select-none hover:bg-[#e6e6e6] transition duration-300 ease-out">Ronnie</div>
+                        <div class="flex items-center justify-between px-4 py-2 bg-[#f3f3f3] rounded-[8px] text-sm font-semibold cursor-pointer select-none hover:bg-[#e6e6e6]  transition duration-300 ease-out">Yana</div>
+                        <div class="flex items-center justify-between px-4 py-2 bg-[#f3f3f3] rounded-[8px] text-sm font-semibold cursor-pointer select-none hover:bg-[#e6e6e6] transition duration-300 ease-out">Frenz</div>
+                        <div class="flex items-center justify-between px-4 py-2 bg-[#f3f3f3] rounded-[8px] text-sm font-semibold cursor-pointer select-none hover:bg-[#e6e6e6] transition duration-300 ease-out">Migs</div>
+                    </div>
+                </div>
+                <!-- end::1 AM List -->
+            </div>
+        </div>
+        <!-- end::Overflow-y -->
+
+        <!-- begin::Add Person -->
+        <div class="flex-1 flex flex-col justify-end">
+            <div class="flex items-center justify-between mt-3 w-full px-4 py-2 bg-[#fefefe] border border-black/50 border-1 rounded-[8px]">
+                <input type="text" class="w-full pr-2 text-xs focus:outline-none" placeholder="Add a person...">
+                <div class="px-2 py-1 text-xs text-white font-semibold cursor-pointer bg-black rounded-[8px] hover:opacity-[0.85] transition duration-300 ease-out">Add</div>
+            </div>
+        </div>
+        <!-- end::Add Person -->
+
+
+    </div>
+    <!-- end::Schedule -->
 
     <script src="/assets/js/index.js"></script>
 </body>
