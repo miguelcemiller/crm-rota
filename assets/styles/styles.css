@@ -632,6 +632,10 @@ video {
   display: flex;
 }
 
+.list-item {
+  display: list-item;
+}
+
 .h-screen {
   height: 100vh;
 }
