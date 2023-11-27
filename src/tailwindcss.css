@@ -1,3 +1,18 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+
+select:required:invalid {
+  color: #9ca3af;
+}
+
+.ghost-class {
+  /* background-color: blue; */
+  opacity: 0;
+}
+
+button.disabled,
+div.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}

@@ -22,6 +22,11 @@ const populateList = (shift, targetList) => {
 
 // Load schedule
 const loadSchedule = async () => {
+  // Clear existing data
+  Object.keys(shiftGroups).forEach((shift) => {
+    shiftGroups[shift] = [];
+  });
+
   //get all person
   await fetch('/get-people', {
     method: 'GET',
@@ -75,5 +80,64 @@ const sortableTwleveAmList = new Sortable(twelveAmList, createSortable('12AM'));
 // Sortable 1 AM list
 const sortableOneAmList = new Sortable(oneAmList, createSortable('1AM'));
 
+// Check name and shift inputs
+const inputName = document.querySelector('#input-name');
+const selectShift = document.querySelector('#select-shift');
+const addButton = document.querySelector('#add-button');
+
+inputName.addEventListener('input', function () {
+  const inputValue = inputName.value.trim();
+  updateAddButtonState(inputValue, selectShift.value);
+});
+
+selectShift.addEventListener('change', () => {
+  const selectedValue = selectShift.value;
+  updateAddButtonState(inputName.value.trim(), selectedValue);
+});
+
+// Function to update Add button state
+const updateAddButtonState = (nameValue, shiftValue) => {
+  if (nameValue.length > 0 && shiftValue) {
+    enableAddButton();
+  } else {
+    disableAddButton();
+  }
+};
+
+// Toggle Add button
+const enableAddButton = () => {
+  addButton.classList.remove('disabled');
+};
+
+const disableAddButton = () => {
+  addButton.classList.add('disabled');
+};
+
 // Executions
 loadSchedule();
+
+// Add person
+const addPerson = async () => {
+  // get number of people in shift
+  let numberOfPepleInShift = 0;
+  shiftGroups[selectShift.value].forEach((person) => {
+    numberOfPepleInShift++;
+  });
+  //get all person
+  await fetch('/add-person', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify([inputName.value, selectShift.value, numberOfPepleInShift]),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+      // Refresh schedule
+      loadSchedule();
+    });
+};
+
+// Add button clicked
+addButton.addEventListener('click', addPerson);

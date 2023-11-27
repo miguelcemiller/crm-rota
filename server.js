@@ -69,6 +69,21 @@ app.post('/update-order', (req, res) => {
   db.close();
 });
 
+// Add person
+app.post('/add-person', (req, res) => {
+  const person = req.body;
+  const db = new sqlite3.Database('database.db');
+
+  const sql = 'INSERT INTO schedule(name, shift, shift_order) VALUES (?, ?, ?)';
+  db.run(sql, [person[0], person[1], person[2] + 1]);
+
+  res.json({
+    message: 'added person',
+  });
+
+  db.close();
+});
+
 // run server
 const server = app.listen(3000, '0.0.0.0', () => {
   console.log(`The application started on port ${server.address().port}`);
