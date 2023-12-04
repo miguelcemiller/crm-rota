@@ -16,3 +16,21 @@ div.disabled {
   opacity: 0.5;
   pointer-events: none;
 }
+
+#overflow-scrollbar-div::-webkit-scrollbar {
+  width: 8px; /* Specify the width of the scrollbar */
+}
+
+#overflow-scrollbar-div::-webkit-scrollbar-thumb {
+  background-color: #272727; /* Specify the color of the thumb (scroll handle) */
+  border-radius: 8px;
+}
+
+#overflow-scrollbar-div::-webkit-scrollbar-track {
+  background-color: transparent; /* Specify the color of the track (the area the thumb moves along) */
+  margin-left: 10px;
+}
+
+#overflow-scrollbar-div::-webkit-scrollbar-thumb:hover {
+  background-color: #3c3c3c; /* Specify the color of the thumb when hovered */
+}

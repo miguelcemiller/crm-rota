@@ -84,6 +84,91 @@ app.post('/add-person', (req, res) => {
   db.close();
 });
 
+// Remove person
+app.post('/remove-person', (req, res) => {
+  const nameAndShfit = req.body;
+  const db = new sqlite3.Database('database.db');
+
+  console.log(nameAndShfit);
+
+  // Used serialize to ensure the statements are executed serially
+  db.serialize(() => {
+    // get shift_order
+    // delete row from shift
+    // update shift_order values for all records in the shift where shift_order > retrieved_shift_order
+    const sql1 = 'SELECT shift_order FROM schedule WHERE name = ? AND shift = ?';
+    const sql2 = 'DELETE FROM schedule WHERE name = ? AND shift = ?';
+    const sql3 = 'UPDATE schedule SET shift_order = shift_order - 1 WHERE shift = ? AND shift_order > ?';
+
+    db.get(sql1, [nameAndShfit[0], nameAndShfit[1]], (err, row) => {
+      if (row) {
+        const retrieved_shift_order = row.shift_order;
+        console.log('Retrieved shift_order:', retrieved_shift_order);
+
+        // Use Promises to handle asynchronous nature
+        const deletePromise = new Promise((resolve, reject) => {
+          db.run(sql2, [nameAndShfit[0], nameAndShfit[1]], (err) => {
+            if (err) reject(err);
+            else resolve();
+          });
+        });
+
+        deletePromise
+          .then(() => {
+            return new Promise((resolve, reject) => {
+              db.run(sql3, [nameAndShfit[1], retrieved_shift_order], (err) => {
+                if (err) reject(err);
+                else resolve();
+              });
+            });
+          })
+          .then(() => {
+            // This is where you can send the response since all operations are complete
+            res.json({
+              message: 'removed person',
+            });
+
+            // Close the database connection
+            db.close();
+          })
+          .catch((err) => {
+            // Handle errors
+            console.error(err);
+
+            // Close the database connection even if an error occurs
+            db.close();
+          });
+      }
+    });
+  });
+});
+
+// check name
+app.post('/check-name', (req, res) => {
+  const name = req.body;
+  const db = new sqlite3.Database('database.db');
+
+  console.log(name);
+
+  const sql = 'SELECT COUNT(*) AS count FROM schedule WHERE LOWER(name) = ?';
+
+  db.get(sql, [name[0]], (err, result) => {
+    if (err) {
+      console.error(err);
+      db.close();
+      return;
+    }
+
+    const nameExists = result.count > 0;
+
+    res.json({
+      message: nameExists,
+    });
+
+    db.close();
+  });
+});
+
 // run server
 const server = app.listen(3000, '0.0.0.0', () => {
   console.log(`The application started on port ${server.address().port}`);
