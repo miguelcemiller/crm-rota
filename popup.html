@@ -3,93 +3,76 @@
   <head>
     <title>crm-rota</title>
     <meta charset="UTF-8" />
-    <style>
-      * {
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-        padding: 0;
-        font-size: 12px;
-        font-weight: 400;
-      }
-
-      #container {
-        padding: 16px;
-      }
-
-      textarea {
-        box-sizing: border-box;
-        display: block;
-        font-size: 12px;
-        width: 400px;
-        height: 50px;
-        outline: none;
-        border: 1px solid #8888;
-        border-radius: 6px;
-        background-color: #f3f3f3;
-        resize: none;
-        padding: 8px;
-        overflow: hidden;
-        margin-bottom: 12px;
-      }
-
-      textarea::placeholder {
-        color: #7c7c7c;
-        font-size: 12px;
-        font-weight: 400;
-      }
-
-      #header {
-        margin-bottom: 14px;
-        display: flex;
-        align-items: center;
-      }
-
-      #header img {
-        height: 14px;
-        width: 14px;
-      }
-
-      #header div {
-        font-size: 16px;
-        font-weight: 600;
-        margin-left: 10px;
-        padding-bottom: 2px;
-      }
-
-      button {
-        outline: none;
-        border: none;
-        background-color: #111111;
-        color: #fafafa;
-        font-size: 12px;
-        font-weight: 600;
-        border-radius: 6px;
-        padding: 10px 4px;
-        width: 100%;
-        cursor: pointer;
-        transition: background-color 0.2s ease-in-out;
-      }
-      button:hover {
-        background-color: #313131;
-      }
-    </style>
+    <link rel="stylesheet" href="main.css" />
   </head>
   <body>
     <!-- begin::container -->
     <div id="container">
+      <!-- begin::header -->
       <div id="header">
-        <img src="/images/icon16.png" />
-        <div>crm-rota</div>
+        <div>
+          <img id="logo" src="/images/icon16.png" />
+          <div id="heading">crm-rota</div>
+        </div>
+        <div>
+          <div id="members">members</div>
+          <div id="home">home</div>
+        </div>
       </div>
+      <!-- end::header -->
 
+      <!-- begin::content -->
       <div id="content">
-        <textarea title="Paste rotation from Slack" placeholder="Paste rotation from Slack"></textarea>
-        <button>Submit</button>
+        <!-- begin::home page-->
+        <div id="home-page">
+          <textarea id="textarea-input" title="paste rotation from slack" placeholder="paste rotation from slack"></textarea>
+
+          <button id="submit" title="submit">submit</button>
+        </div>
+        <!-- end::home page -->
+
+        <!-- begin::result page -->
+        <div id="result-page">
+          <div id="result">
+            <div id="result-header">
+              <div id="copy-text" title="copy text">
+                <img src="images/copy-text.svg" />
+                <div>copy text</div>
+              </div>
+            </div>
+
+            <textarea id="textarea-result"></textarea>
+          </div>
+
+          <button id="back" title="back">back</button>
+        </div>
+        <!-- end::result page -->
+
+        <!-- begin::members page -->
+        <div id="members-page">
+          <div style="display: flex; flex-direction: column">
+            <div id="members-form">
+              <div id="inputs-container">
+                <input type="text" id="member-name" placeholder="name" />
+                <select id="shift">
+                  <option value="">shift</option>
+                  <option value="9PM">9PM</option>
+                  <option value="10PM">10PM</option>
+                  <option value="11PM">11PM</option>
+                  <option value="12PM">12PM</option>
+                </select>
+              </div>
+              <button id="add">add</button>
+            </div>
+
+            <div id="members-list-container">
+              <div id="members-list"></div>
+            </div>
+          </div>
+        </div>
+        <!-- end::members page -->
       </div>
+      <!-- end::content -->
     </div>
     <!-- end::container -->
 
