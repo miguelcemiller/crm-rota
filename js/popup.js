@@ -70,11 +70,14 @@ const emojiMap = {
   ":briefcase:": "💼",
   ":alert:": "🚨",
   ":rotating_light:": "🚨",
+  ":redsiren:": "🚨",
+  ":siren:": "🚨",
+  ":alert-1803:": "🚨",
 };
 
 // function to replace placeholders with emojis
 function replacePlaceholdersWithEmojis(text) {
-  return text.replace(/:\w+:/g, (match) => {
+  return text.replace(/:[\w-]+:/g, (match) => {
     return emojiMap[match] || match;
   });
 }
@@ -127,8 +130,6 @@ submit.addEventListener("click", () => {
       }
     }
   }
-
-  console.log(uniqueNames);
 
   const missingNames = uniqueNames.filter((name) => {
     // check if the name exists in any shift
