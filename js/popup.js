@@ -136,8 +136,6 @@ submit.addEventListener("click", () => {
     }
   });
 
-  // console.log(separatedInputs);
-
   // GROUP ACCORDING TO COUNT
   function groupAndSortNames(inputLine) {
     const namesWithoutNumbers = [];
@@ -160,8 +158,6 @@ submit.addEventListener("click", () => {
 
     return sortedNames.join(" > ");
   }
-
-  // console.log(separatedInputs);
 
   // GROUP BY COUNT AND SHIFT TIME
   function groupByCountAndShift(inputLines) {
@@ -195,7 +191,17 @@ submit.addEventListener("click", () => {
       });
     });
 
-    // console.log(groupedByCount);
+    // move the first member of each group to the end
+    for (let count in groupedByCount) {
+      for (let shiftTime in groupedByCount[count]) {
+        const membersList = groupedByCount[count][shiftTime];
+        if (membersList.length > 1) {
+          // Move the first member to the end
+          const firstMember = membersList.shift();
+          membersList.push(firstMember);
+        }
+      }
+    }
 
     // format the grouped result
     let result = [];
@@ -239,25 +245,11 @@ submit.addEventListener("click", () => {
     // group names with numbers by count and shift time
     const groupedResult = groupByCountAndShift([namesWithNumbers.join(" > ")]);
 
-    // Add names without numbers at the beginning
+    // add names without numbers at the beginning
     const finalResult = namesWithoutNumbers.join(" > ") + " > " + groupedResult;
 
     separatedInputs[title] = finalResult;
   }
-
-  console.log(separatedInputs);
-
-  // MOVE THE FIRST MEMBER TO THE LAST OF THE GROUP (FOR GROUP MEMBERS WITH SAME COUNT AND SHIFT TIME)
-
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //
 
   // OUPUT
   let formattedOutput = "";
@@ -265,7 +257,7 @@ submit.addEventListener("click", () => {
   for (let title in separatedInputs) {
     if (separatedInputs.hasOwnProperty(title)) {
       const list = separatedInputs[title];
-      formattedOutput += `${title}\n${list}\n\n`;
+      formattedOutput += `${title}\n${list}\n`;
     }
   }
 
