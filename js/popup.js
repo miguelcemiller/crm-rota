@@ -161,13 +161,93 @@ submit.addEventListener("click", () => {
     return sortedNames.join(" > ");
   }
 
+  // console.log(separatedInputs);
+
+  // GROUP BY COUNT AND SHIFT TIME
+  function groupByCountAndShift(inputLines) {
+    const shiftTimes = ["9PM", "10PM", "11PM", "12PM"];
+
+    const groupedByCount = {};
+
+    // initialize the groupedByCount object
+    for (let i = 1; i <= 20; i++) {
+      // starting from 1 to exclude 0 count
+      groupedByCount[i] = {};
+      shiftTimes.forEach((shift) => {
+        groupedByCount[i][shift] = [];
+      });
+    }
+
+    inputLines.forEach((line) => {
+      const tokens = line.split(">").filter((token) => token.trim() !== "");
+      tokens.forEach((token) => {
+        const trimmedToken = token.trim();
+        const match = trimmedToken.match(/(\d+)$/);
+        const name = match ? trimmedToken.replace(/\d+$/, "").trim() : trimmedToken;
+        const count = match ? parseInt(match[1], 10) : 0;
+
+        // determine the shift time based on the name
+        const shiftTime = shiftTimes.find((shift) => members[shift] && members[shift].includes(name)) || "Unknown";
+
+        if (shiftTime !== "Unknown") {
+          groupedByCount[count][shiftTime].push(trimmedToken);
+        }
+      });
+    });
+
+    // console.log(groupedByCount);
+
+    // format the grouped result
+    let result = [];
+
+    // order by count first, then shift time
+    Object.keys(groupedByCount)
+      .sort((a, b) => parseInt(a) - parseInt(b))
+      .forEach((count) => {
+        shiftTimes.forEach((shiftTime) => {
+          if (groupedByCount[count][shiftTime].length > 0) {
+            const sortedNames = groupedByCount[count][shiftTime].join(" > ");
+            result.push(sortedNames);
+          }
+        });
+      });
+
+    return result.join(" > ");
+  }
+
   for (let title in separatedInputs) {
     const inputLines = separatedInputs[title];
     const sortedLines = inputLines.map((line) => groupAndSortNames(line));
-    separatedInputs[title] = sortedLines;
+
+    // separate names with numbers and without numbers
+    const namesWithNumbers = [];
+    const namesWithoutNumbers = [];
+
+    sortedLines.forEach((line) => {
+      const tokens = line.split(">").filter((token) => token.trim() !== "");
+      tokens.forEach((token) => {
+        const trimmedToken = token.trim();
+        const match = trimmedToken.match(/(\d+)$/);
+        if (match) {
+          namesWithNumbers.push(trimmedToken);
+        } else {
+          namesWithoutNumbers.push(trimmedToken);
+        }
+      });
+    });
+
+    // group names with numbers by count and shift time
+    const groupedResult = groupByCountAndShift([namesWithNumbers.join(" > ")]);
+
+    // Add names without numbers at the beginning
+    const finalResult = namesWithoutNumbers.join(" > ") + " > " + groupedResult;
+
+    separatedInputs[title] = finalResult;
   }
 
   console.log(separatedInputs);
+
+  // MOVE THE FIRST MEMBER TO THE LAST OF THE GROUP (FOR GROUP MEMBERS WITH SAME COUNT AND SHIFT TIME)
 
   //
   //
@@ -182,12 +262,10 @@ submit.addEventListener("click", () => {
   // OUPUT
   let formattedOutput = "";
 
-  // iterate over each entry in separatedInputs
   for (let title in separatedInputs) {
     if (separatedInputs.hasOwnProperty(title)) {
-      // format the title and its corresponding sorted list
-      const list = separatedInputs[title].join(" > ");
-      formattedOutput += `${title}\n${list}\n`;
+      const list = separatedInputs[title];
+      formattedOutput += `${title}\n${list}\n\n`;
     }
   }
 
