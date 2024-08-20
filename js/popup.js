@@ -184,53 +184,103 @@ submit.addEventListener("click", () => {
     const shiftTimes = ["9PM", "10PM", "11PM", "12PM"];
 
     const groupedByCount = {};
+    const groupedByR3 = {};
 
-    // initialize the groupedByCount object
+    // Initialize the groupedByCount and groupedByR3 objects
     for (let i = 1; i <= 20; i++) {
-      // starting from 1 to exclude 0 count
       groupedByCount[i] = {};
+      groupedByR3[i] = {};
       shiftTimes.forEach((shift) => {
         groupedByCount[i][shift] = [];
+        groupedByR3[i][shift] = [];
       });
+      // Initialize "Unknown" shift time
+      groupedByCount[i]["Unknown"] = [];
+      groupedByR3[i]["Unknown"] = [];
     }
+
+    const namesWithoutCounts = [];
+    const namesWithoutCountsR3 = [];
 
     inputLines.forEach((line) => {
       const tokens = line.split(">").filter((token) => token.trim() !== "");
       tokens.forEach((token) => {
         const trimmedToken = token.trim();
         const match = trimmedToken.match(/(\d+)$/);
+        const isR3 = /\[R\d+\]/.test(trimmedToken);
         const name = match ? trimmedToken.replace(/\d+$/, "").trim() : trimmedToken;
         const count = match ? parseInt(match[1], 10) : 0;
 
-        // determine the shift time based on the name
-        const shiftTime = shiftTimes.find((shift) => members[shift] && members[shift].includes(name)) || "Unknown";
+        // Determine the shift time based on the name
+        const shiftTime = shiftTimes.find((shift) => {
+          const normalizedShiftNames = members[shift]?.map((n) => n.trim().toLowerCase());
+          return normalizedShiftNames && normalizedShiftNames.includes(name.toLowerCase());
+        });
 
-        if (shiftTime !== "Unknown") {
-          groupedByCount[count][shiftTime].push(trimmedToken);
+        console.log(`Processed Name: ${name}, isR3: ${isR3}, Count: ${count}, Shift: ${shiftTime}`);
+
+        if (isR3) {
+          if (count === 0) {
+            namesWithoutCountsR3.push(trimmedToken);
+          } else if (shiftTime) {
+            groupedByR3[count][shiftTime].push(trimmedToken);
+          } else {
+            groupedByR3[count]["Unknown"].push(trimmedToken); // Handle unknown shift time for R3 names
+          }
+        } else {
+          if (count === 0) {
+            namesWithoutCounts.push(trimmedToken);
+          } else if (shiftTime) {
+            groupedByCount[count][shiftTime].push(trimmedToken);
+          } else {
+            groupedByCount[count]["Unknown"].push(trimmedToken); // Handle unknown shift time for non-R3 names
+          }
         }
       });
     });
 
-    // move the first member of each group to the end
-    for (let count in groupedByCount) {
-      for (let shiftTime in groupedByCount[count]) {
-        const membersList = groupedByCount[count][shiftTime];
-        if (membersList.length > 1) {
-          // Move the first member to the end
-          const firstMember = membersList.shift();
-          membersList.push(firstMember);
+    console.log(namesWithoutCountsR3);
+    console.log(groupedByR3);
+
+    // Move the first member of each group to the end
+    function moveFirstMemberToEnd(groupedByCount) {
+      for (let count in groupedByCount) {
+        for (let shiftTime in groupedByCount[count]) {
+          const membersList = groupedByCount[count][shiftTime];
+          if (membersList.length > 1) {
+            // Move the first member to the end
+            const firstMember = membersList.shift();
+            membersList.push(firstMember);
+          }
         }
       }
     }
 
-    // format the grouped result
+    moveFirstMemberToEnd(groupedByR3);
+    moveFirstMemberToEnd(groupedByCount);
+
+    // Format the grouped result
+    let resultR3 = [];
     let result = [];
 
-    // order by count first, then shift time
+    // Order by count first, then shift time
+    Object.keys(groupedByR3)
+      .sort((a, b) => parseInt(a) - parseInt(b))
+      .forEach((count) => {
+        shiftTimes.concat(["Unknown"]).forEach((shiftTime) => {
+          // Include "Unknown" shift time in sorting
+          if (groupedByR3[count][shiftTime].length > 0) {
+            const sortedNames = groupedByR3[count][shiftTime].join(" > ");
+            resultR3.push(sortedNames);
+          }
+        });
+      });
+
     Object.keys(groupedByCount)
       .sort((a, b) => parseInt(a) - parseInt(b))
       .forEach((count) => {
-        shiftTimes.forEach((shiftTime) => {
+        shiftTimes.concat(["Unknown"]).forEach((shiftTime) => {
+          // Include "Unknown" shift time in sorting
           if (groupedByCount[count][shiftTime].length > 0) {
             const sortedNames = groupedByCount[count][shiftTime].join(" > ");
             result.push(sortedNames);
@@ -238,40 +288,23 @@ submit.addEventListener("click", () => {
         });
       });
 
-    return result.join(" > ");
+    const finalR3Result = namesWithoutCountsR3.length > 0 ? namesWithoutCountsR3.join(" > ") + (resultR3.length > 0 ? " > " : "") + resultR3.join(" > ") : resultR3.join(" > ");
+
+    const finalResult = namesWithoutCounts.length > 0 ? namesWithoutCounts.join(" > ") + (result.length > 0 ? " > " : "") + result.join(" > ") : result.join(" > ");
+
+    return finalR3Result + (finalR3Result && finalResult ? " > " : "") + finalResult;
   }
 
   for (let title in separatedInputs) {
     const inputLines = separatedInputs[title];
     const sortedLines = inputLines.map((line) => groupAndSortNames(line));
 
-    // separate names with numbers and without numbers
-    const namesWithNumbers = [];
-    const namesWithoutNumbers = [];
+    const groupedResult = groupByCountAndShift([sortedLines.join(" > ")]);
 
-    sortedLines.forEach((line) => {
-      const tokens = line.split(">").filter((token) => token.trim() !== "");
-      tokens.forEach((token) => {
-        const trimmedToken = token.trim();
-        const match = trimmedToken.match(/(\d+)$/);
-        if (match) {
-          namesWithNumbers.push(trimmedToken);
-        } else {
-          namesWithoutNumbers.push(trimmedToken);
-        }
-      });
-    });
-
-    // group names with numbers by count and shift time
-    const groupedResult = groupByCountAndShift([namesWithNumbers.join(" > ")]);
-
-    // add names without numbers at the beginning
-    const finalResult = namesWithoutNumbers.join(" > ") + " > " + groupedResult;
-
-    separatedInputs[title] = finalResult;
+    separatedInputs[title] = groupedResult;
   }
 
-  // OUPUT
+  // OUTPUT
   let formattedOutput = "";
 
   for (let title in separatedInputs) {
@@ -281,9 +314,9 @@ submit.addEventListener("click", () => {
     }
   }
 
-  // set the value of textareaResult
   textareaResult.value = formattedOutput.trim();
 
+  // show the result page
   requestAnimationFrame(() => {
     textareaResult.style.height = "52px";
     textareaResult.style.height = `${textareaResult.scrollHeight}px`;
