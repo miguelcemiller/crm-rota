@@ -3,7 +3,7 @@ const homePage = document.querySelector("#home-page");
 const resultPage = document.querySelector("#result-page");
 const membersPage = document.querySelector("#members-page");
 
-// header els
+// header links
 const membersLink = document.querySelector("#members");
 const homeLink = document.querySelector("#home");
 
@@ -26,29 +26,36 @@ const membersList = document.querySelector("#members-list");
 // alerts
 const homeAlert = document.querySelector("#home-alert");
 const membersAlert = document.querySelector("#members-alert");
+const closeAlerts = document.querySelectorAll(".close-alert");
 
-const alert = document.querySelector(".alert");
-const alertValue = document.querySelector(".alert-value");
-const closeAlert = document.querySelector(".close-alert");
-
-closeAlert.addEventListener("click", () => {
-  alert.style.display = "none";
+// close alerts click event
+closeAlerts.forEach((closeAlert) => {
+  closeAlert.addEventListener("click", () => {
+    closeAlert.parentElement.style.display = "none";
+  });
 });
 
-// members header el click event
+// members link click event
 membersLink.addEventListener("click", () => {
   membersLink.style.display = "none";
   homeLink.style.display = "block";
+
+  membersAlert.style.display = "none";
+  inputName.value = "";
+  selectShift.value = "";
 
   homePage.style.display = "none";
   resultPage.style.display = "none";
   membersPage.style.display = "block";
 });
 
-// home header els click event
+// home link click event
 homeLink.addEventListener("click", () => {
   homeLink.style.display = "none";
   membersLink.style.display = "block";
+
+  homeAlert.style.display = "none";
+  textareaInput.value = "";
 
   membersPage.style.display = "none";
   resultPage.style.display = "none";
@@ -83,7 +90,7 @@ textareaInput.addEventListener("input", () => {
 submit.addEventListener("click", () => {
   // if input is empty, return
   if (textareaInput.value.trim() === "") {
-    alertValue.innerText = "input is empty.";
+    homeAlert.querySelector(".alert-value").innerText = "input is empty.";
     homeAlert.style.display = "flex";
     return;
   }
@@ -101,15 +108,27 @@ submit.addEventListener("click", () => {
   // FIND MISSING NAMES
   const uniqueNames = [];
 
+  // utility function to clean names
+  function cleanName(name) {
+    return name
+      .replace(/\s*\[R\d+\]\s*/, "")
+      .replace(/\d+$/, "")
+      .trim();
+  }
+
   for (let line of lines) {
     const tokens = line.split(">").filter((token) => token.trim() !== "");
     for (let token of tokens) {
-      const name = token.replace(/\d/g, "").trim();
+      let name = token.trim();
+      // clean the name
+      name = cleanName(name);
       if (name !== "" && !titleEmojis.some((emoji) => name.startsWith(emoji) || name.endsWith(emoji)) && !uniqueNames.includes(name)) {
         uniqueNames.push(name);
       }
     }
   }
+
+  console.log(uniqueNames);
 
   const missingNames = uniqueNames.filter((name) => {
     // check if the name exists in any shift
@@ -118,7 +137,7 @@ submit.addEventListener("click", () => {
 
   if (missingNames.length > 0) {
     const missingNamesList = missingNames.join(", ");
-    alertValue.innerText = `${missingNamesList} not found`;
+    homeAlert.querySelector(".alert-value").innerText = `${missingNamesList} not found`;
     homeAlert.style.display = "flex";
     return;
   }
@@ -306,6 +325,8 @@ back.addEventListener("click", () => {
   textareaInput.value = "";
   textareaInput.style.height = "50px";
 
+  homeAlert.style.display = "none";
+
   resultPage.style.display = "none";
   homePage.style.display = "block";
 });
@@ -414,8 +435,9 @@ add.addEventListener("click", () => {
     const nameExists = Object.values(members).some((memberList) => memberList.includes(name));
 
     if (nameExists) {
-      alertValue.innerText = "member already exists.";
+      membersAlert.querySelector(".alert-value").innerText = "member already exists.";
       membersAlert.style.display = "flex";
+      return;
     } else {
       saveMemberToLocalStorage(name, shift);
       inputName.value = "";
@@ -424,8 +446,9 @@ add.addEventListener("click", () => {
       updateMembersList();
     }
   } else {
-    alertValue.innerText = "enter name and select shift.";
-    alert.style.display = "flex";
+    membersAlert.querySelector(".alert-value").innerText = "enter name and shift.";
+    membersAlert.style.display = "flex";
+    return;
   }
 });
 
