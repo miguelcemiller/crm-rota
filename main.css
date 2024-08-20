@@ -284,8 +284,13 @@ button:hover {
 }
 
 /* alert */
-.alert {
+#home-alert,
+#members-alert {
   display: none;
+}
+
+.alert {
+  display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 4px;
@@ -303,8 +308,8 @@ button:hover {
 }
 
 .close-alert {
-  min-height: 10px;
-  min-width: 10px;
+  min-height: 16px;
+  min-width: 16px;
   cursor: pointer;
   opacity: 0.75;
 }

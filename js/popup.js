@@ -24,6 +24,9 @@ const add = document.querySelector("#add");
 const membersList = document.querySelector("#members-list");
 
 // alerts
+const homeAlert = document.querySelector("#home-alert");
+const membersAlert = document.querySelector("#members-alert");
+
 const alert = document.querySelector(".alert");
 const alertValue = document.querySelector(".alert-value");
 const closeAlert = document.querySelector(".close-alert");
@@ -78,7 +81,118 @@ textareaInput.addEventListener("input", () => {
 
 // submit button click event
 submit.addEventListener("click", () => {
-  textareaResult.value = textareaInput.value;
+  // if input is empty, return
+  if (textareaInput.value.trim() === "") {
+    alertValue.innerText = "input is empty.";
+    homeAlert.style.display = "flex";
+    return;
+  }
+
+  // get members from storage
+  const members = JSON.parse(localStorage.getItem("members")) || {};
+
+  // get text input
+  const inputText = textareaInput.value.trim();
+
+  const lines = inputText.split("\n");
+
+  const titleEmojis = ["☎️", "💬", "⭐", "💼"];
+
+  // FIND MISSING NAMES
+  const uniqueNames = [];
+
+  for (let line of lines) {
+    const tokens = line.split(">").filter((token) => token.trim() !== "");
+    for (let token of tokens) {
+      const name = token.replace(/\d/g, "").trim();
+      if (name !== "" && !titleEmojis.some((emoji) => name.startsWith(emoji) || name.endsWith(emoji)) && !uniqueNames.includes(name)) {
+        uniqueNames.push(name);
+      }
+    }
+  }
+
+  const missingNames = uniqueNames.filter((name) => {
+    // check if the name exists in any shift
+    return !Object.values(members).some((member) => member.includes(name));
+  });
+
+  if (missingNames.length > 0) {
+    const missingNamesList = missingNames.join(", ");
+    alertValue.innerText = `${missingNamesList} not found`;
+    homeAlert.style.display = "flex";
+    return;
+  }
+
+  // separate inputs by title
+  const separatedInputs = {};
+
+  let currentTitle = "";
+  lines.forEach((line) => {
+    if (titleEmojis.some((emoji) => line.startsWith(emoji))) {
+      currentTitle = line;
+      separatedInputs[currentTitle] = [];
+    } else {
+      separatedInputs[currentTitle].push(line);
+    }
+  });
+
+  // console.log(separatedInputs);
+
+  // GROUP ACCORDING TO COUNT
+  function groupAndSortNames(inputLine) {
+    const namesWithoutNumbers = [];
+    const namesWithNumbers = [];
+
+    const tokens = inputLine.split(">").filter((token) => token.trim() !== "");
+    tokens.forEach((token) => {
+      const name = token.trim();
+      const match = name.match(/(\d+)$/); // Check for number at the end of the name
+      if (match) {
+        namesWithNumbers.push({ name: name, number: parseInt(match[1], 10) });
+      } else {
+        namesWithoutNumbers.push(name);
+      }
+    });
+
+    namesWithNumbers.sort((a, b) => a.number - b.number);
+
+    const sortedNames = namesWithoutNumbers.concat(namesWithNumbers.map((obj) => obj.name));
+
+    return sortedNames.join(" > ");
+  }
+
+  for (let title in separatedInputs) {
+    const inputLines = separatedInputs[title];
+    const sortedLines = inputLines.map((line) => groupAndSortNames(line));
+    separatedInputs[title] = sortedLines;
+  }
+
+  console.log(separatedInputs);
+
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+  //
+
+  // OUPUT
+  let formattedOutput = "";
+
+  // iterate over each entry in separatedInputs
+  for (let title in separatedInputs) {
+    if (separatedInputs.hasOwnProperty(title)) {
+      // format the title and its corresponding sorted list
+      const list = separatedInputs[title].join(" > ");
+      formattedOutput += `${title}\n${list}\n`;
+    }
+  }
+
+  // set the value of textareaResult
+  textareaResult.value = formattedOutput.trim();
 
   requestAnimationFrame(() => {
     textareaResult.style.height = "52px";
@@ -98,7 +212,7 @@ copyText.addEventListener("click", () => {
   // only copy if text is 'copy text'
   if (copyText.querySelector("div").innerText == "copy text") {
     // replace 💬 with :messages: and 🚨 with :alert: in the textarea value
-    const textToCopy = textareaInput.value.replace(/💬/g, ":messages:").replace(/🚨/g, ":alert:");
+    const textToCopy = textareaResult.value.replace(/💬/g, ":messages:").replace(/🚨/g, ":alert:");
 
     navigator.clipboard
       .writeText(textToCopy)
@@ -147,8 +261,17 @@ function updateMembersList() {
     return;
   }
 
-  // iterate over each shift and its associated members
-  for (const [shift, memberList] of Object.entries(members)) {
+  // predefined order of shifts
+  const shiftOrder = ["9PM", "10PM", "11PM", "12PM"];
+
+  // sort the shifts according to the predefined order
+  const sortedShifts = Object.keys(members).sort((a, b) => {
+    return shiftOrder.indexOf(a) - shiftOrder.indexOf(b);
+  });
+
+  // iterate over each sorted shift and its associated members
+  for (const shift of sortedShifts) {
+    const memberList = members[shift];
     memberList.forEach((member) => {
       // create a new list item for each member
       const membersListItem = document.createElement("div");
@@ -222,7 +345,7 @@ add.addEventListener("click", () => {
 
     if (nameExists) {
       alertValue.innerText = "member already exists.";
-      alert.style.display = "flex";
+      membersAlert.style.display = "flex";
     } else {
       saveMemberToLocalStorage(name, shift);
       inputName.value = "";
