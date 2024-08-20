@@ -56,6 +56,7 @@ homeLink.addEventListener("click", () => {
 
   homeAlert.style.display = "none";
   textareaInput.value = "";
+  textareaInput.style.height = "50px";
 
   membersPage.style.display = "none";
   resultPage.style.display = "none";
@@ -176,7 +177,8 @@ submit.addEventListener("click", () => {
 
     const sortedNames = namesWithoutNumbers.concat(namesWithNumbers.map((obj) => obj.name));
 
-    return sortedNames.join(" > ");
+    // Join names with " > " and ensure only one space around ">"
+    return sortedNames.join(" > ").replace(/ > +/g, " > ").trim();
   }
 
   // GROUP BY COUNT AND SHIFT TIME
@@ -217,8 +219,6 @@ submit.addEventListener("click", () => {
           return normalizedShiftNames && normalizedShiftNames.includes(name.toLowerCase());
         });
 
-        console.log(`Processed Name: ${name}, isR3: ${isR3}, Count: ${count}, Shift: ${shiftTime}`);
-
         if (isR3) {
           if (count === 0) {
             namesWithoutCountsR3.push(trimmedToken);
@@ -238,9 +238,6 @@ submit.addEventListener("click", () => {
         }
       });
     });
-
-    console.log(namesWithoutCountsR3);
-    console.log(groupedByR3);
 
     // Move the first member of each group to the end
     function moveFirstMemberToEnd(groupedByCount) {
@@ -270,7 +267,11 @@ submit.addEventListener("click", () => {
         shiftTimes.concat(["Unknown"]).forEach((shiftTime) => {
           // Include "Unknown" shift time in sorting
           if (groupedByR3[count][shiftTime].length > 0) {
-            const sortedNames = groupedByR3[count][shiftTime].join(" > ");
+            const sortedNames = groupedByR3[count][shiftTime]
+              .map((item) => item.replace(/\d+$/, "")) // Remove counts from names
+              .join(" > ")
+              .replace(/\s*>\s*/g, " > ") // Ensure single space around ">"
+              .replace(/\s*\[R\d+\]\s*/g, " [R3] "); // Ensure single space around [R3]
             resultR3.push(sortedNames);
           }
         });
@@ -282,17 +283,23 @@ submit.addEventListener("click", () => {
         shiftTimes.concat(["Unknown"]).forEach((shiftTime) => {
           // Include "Unknown" shift time in sorting
           if (groupedByCount[count][shiftTime].length > 0) {
-            const sortedNames = groupedByCount[count][shiftTime].join(" > ");
+            const sortedNames = groupedByCount[count][shiftTime]
+              .map((item) => item.replace(/\d+$/, "")) // Remove counts from names
+              .join(" > ")
+              .replace(/\s*>\s*/g, " > ") // Ensure single space around ">"
+              .replace(/\s*\[R\d+\]\s*/g, " [R3] "); // Ensure single space around [R3]
             result.push(sortedNames);
           }
         });
       });
 
-    const finalR3Result = namesWithoutCountsR3.length > 0 ? namesWithoutCountsR3.join(" > ") + (resultR3.length > 0 ? " > " : "") + resultR3.join(" > ") : resultR3.join(" > ");
+    const finalR3Result = namesWithoutCountsR3.length > 0 ? namesWithoutCountsR3.join(">") + (resultR3.length > 0 ? ">" : "") + resultR3.join(">") : resultR3.join(">");
 
-    const finalResult = namesWithoutCounts.length > 0 ? namesWithoutCounts.join(" > ") + (result.length > 0 ? " > " : "") + result.join(" > ") : result.join(" > ");
+    const finalResult = namesWithoutCounts.length > 0 ? namesWithoutCounts.join(">") + (result.length > 0 ? ">" : "") + result.join(">") : result.join(">");
 
-    return finalR3Result + (finalR3Result && finalResult ? " > " : "") + finalResult;
+    return (finalR3Result + (finalR3Result && finalResult ? " > " : "") + finalResult)
+      .replace(/\s*>\s*/g, " > ") // Ensure single space around ">"
+      .trim();
   }
 
   for (let title in separatedInputs) {
