@@ -257,6 +257,22 @@ submit.addEventListener("click", () => {
       });
     });
 
+    // Function to sort names by count and shift time
+    function sortNames(names, isR3) {
+      return names.sort((a, b) => {
+        const countA = parseInt(a.match(/(\d+)$/)?.[1] || 0, 10);
+        const countB = parseInt(b.match(/(\d+)$/)?.[1] || 0, 10);
+        if (countA === countB) {
+          if (isR3) {
+            const shiftTimeA = shiftTimes.find((shift) => a.includes(shift)) || "Unknown";
+            const shiftTimeB = shiftTimes.find((shift) => b.includes(shift)) || "Unknown";
+            return shiftTimes.indexOf(shiftTimeA) - shiftTimes.indexOf(shiftTimeB);
+          }
+        }
+        return countA - countB;
+      });
+    }
+
     // Move the first member of each group to the end
     function moveFirstMemberToEnd(groupedByCount) {
       for (let count in groupedByCount) {
@@ -271,21 +287,19 @@ submit.addEventListener("click", () => {
       }
     }
 
-    moveFirstMemberToEnd(groupedByR3);
     moveFirstMemberToEnd(groupedByCount);
 
     // Format the grouped result
     let resultR3 = [];
     let result = [];
 
-    // Order by count first, then shift time
+    // Order by count first, then shift time for R3 names
     Object.keys(groupedByR3)
       .sort((a, b) => parseInt(a) - parseInt(b))
       .forEach((count) => {
         shiftTimes.concat(["Unknown"]).forEach((shiftTime) => {
-          // Include "Unknown" shift time in sorting
           if (groupedByR3[count][shiftTime].length > 0) {
-            const sortedNames = groupedByR3[count][shiftTime]
+            const sortedNames = sortNames(groupedByR3[count][shiftTime], true)
               .map((item) => item.replace(/\d+$/, "")) // Remove counts from names
               .join(" > ")
               .replace(/\s*>\s*/g, " > ") // Ensure single space around ">"
@@ -295,13 +309,13 @@ submit.addEventListener("click", () => {
         });
       });
 
+    // Order by count first, then shift time for non-R3 names
     Object.keys(groupedByCount)
       .sort((a, b) => parseInt(a) - parseInt(b))
       .forEach((count) => {
         shiftTimes.concat(["Unknown"]).forEach((shiftTime) => {
-          // Include "Unknown" shift time in sorting
           if (groupedByCount[count][shiftTime].length > 0) {
-            const sortedNames = groupedByCount[count][shiftTime]
+            const sortedNames = sortNames(groupedByCount[count][shiftTime], false)
               .map((item) => item.replace(/\d+$/, "")) // Remove counts from names
               .join(" > ")
               .replace(/\s*>\s*/g, " > ") // Ensure single space around ">"
