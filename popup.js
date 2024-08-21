@@ -14,7 +14,8 @@ const submit = document.querySelector("button[id='submit']");
 // result page els
 const result = document.querySelector("#result");
 const textareaResult = document.querySelector("#textarea-result");
-const copyText = document.querySelector("#copy-text");
+const textareaResultContainer = document.querySelector("#textarea-result-container");
+const overlay = document.querySelector("#overlay");
 const back = document.querySelector("button[id='back']");
 
 // members page els
@@ -90,8 +91,18 @@ textareaInput.addEventListener("input", () => {
   textareaInput.value = replacePlaceholdersWithEmojis(textareaInput.value);
 });
 
+// trigger submit on Enter key
+textareaInput.addEventListener("keydown", function (e) {
+  if (e.key === "Enter" && !e.shiftKey) {
+    submit.click();
+  }
+});
+
 // submit button click event
 submit.addEventListener("click", () => {
+  // hide home alerts
+  homeAlert.style.display = "none";
+
   // if input is empty, return
   if (textareaInput.value.trim() === "") {
     homeAlert.querySelector(".alert-value").innerText = "input is empty.";
@@ -107,7 +118,7 @@ submit.addEventListener("click", () => {
 
   const lines = inputText.split("\n");
 
-  const titleEmojis = ["☎️", "💬", "⭐", "💼"];
+  const titleEmojis = ["☎️", "💬", "⭐", "💼", "🚨"];
 
   // FIND MISSING NAMES
   const uniqueNames = [];
@@ -337,22 +348,34 @@ submit.addEventListener("click", () => {
 textareaResult.addEventListener("mousedown", (e) => e.preventDefault());
 textareaResult.addEventListener("keydown", (e) => e.preventDefault());
 
-// copy text click event
-copyText.addEventListener("click", () => {
-  // only copy if text is 'copy text'
-  if (copyText.querySelector("div").innerText == "copy text") {
+// textarea result container hover
+textareaResultContainer.addEventListener("mouseover", () => {
+  overlay.classList.add("active");
+  overlay.setAttribute("copy", true);
+});
+
+textareaResultContainer.addEventListener("mouseout", () => {
+  overlay.classList.remove("active");
+  overlay.setAttribute("copy", false);
+});
+
+// overlay click event
+overlay.addEventListener("click", () => {
+  // only copy if text attribute copy is true
+  if (overlay.getAttribute("copy") == "true") {
     // replace 💬 with :messages: and 🚨 with :alert: in the textarea value
     const textToCopy = textareaResult.value.replace(/💬/g, ":messages:").replace(/🚨/g, ":alert:");
 
+    // copy to clipboard
     navigator.clipboard
       .writeText(textToCopy)
       .then(() => {
-        copyText.querySelector("img").src = "images/copied.svg";
-        copyText.querySelector("div").innerText = "copied!";
+        overlay.querySelector("img").src = "images/copied.svg";
+        overlay.style.pointerEvents = "none";
 
         setTimeout(() => {
-          copyText.querySelector("img").src = "images/copy-text.svg";
-          copyText.querySelector("div").innerText = "copy text";
+          overlay.querySelector("img").src = "images/copy-text.svg";
+          overlay.style.pointerEvents = "auto";
         }, 1000);
       })
       .catch((err) => {
@@ -365,8 +388,6 @@ copyText.addEventListener("click", () => {
 back.addEventListener("click", () => {
   textareaInput.value = "";
   textareaInput.style.height = "50px";
-
-  homeAlert.style.display = "none";
 
   resultPage.style.display = "none";
   homePage.style.display = "block";
@@ -466,6 +487,9 @@ function saveMemberToLocalStorage(name, shift) {
 
 // add button click event
 add.addEventListener("click", () => {
+  // hide members alert
+  membersAlert.style.display = "none";
+
   const name = inputName.value.trim();
   const shift = selectShift.value;
 

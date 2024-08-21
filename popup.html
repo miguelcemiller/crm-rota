@@ -10,13 +10,13 @@
     <div id="container">
       <!-- begin::header -->
       <div id="header">
-        <div>
-          <img id="logo" src="/images/icon16.png" />
+        <a href="https://github.com/miguelcemiller/crm-rota" target="_blank" title="github">
+          <img id="logo" src="/images/icon128.png" />
           <div id="heading">crm-rota</div>
-        </div>
+        </a>
         <div>
-          <div id="members">members</div>
-          <div id="home">home</div>
+          <div id="members" title="members">members</div>
+          <div id="home" title="home">home</div>
         </div>
       </div>
       <!-- end::header -->
@@ -33,26 +33,23 @@
             </svg>
           </div>
 
-          <textarea id="textarea-input" title="paste rotation from slack" placeholder="paste rotation from slack"></textarea>
+          <textarea id="textarea-input" title="paste rota from slack" placeholder="paste rota from slack"></textarea>
 
-          <button id="submit" title="submit">submit</button>
+          <button id="submit" class="btn-primary" title="submit">submit</button>
         </div>
         <!-- end::home page -->
 
         <!-- begin::result page -->
         <div id="result-page">
-          <div id="result">
-            <div id="result-header">
-              <div id="copy-text" title="copy text">
-                <img src="images/copy-text.svg" />
-                <div>copy text</div>
-              </div>
-            </div>
-
+          <!-- textarea result container -->
+          <div id="textarea-result-container">
             <textarea id="textarea-result"></textarea>
+            <div id="overlay" copy="false">
+              <img src="images/copy-text.svg" title="copy text" alt="copy text" style="width: 20px; height: 20px" />
+            </div>
           </div>
 
-          <button id="back" title="back">back</button>
+          <button id="back" class="btn-primary" title="back">back</button>
         </div>
         <!-- end::result page -->
 
@@ -82,7 +79,7 @@
                   </select>
                 </div>
               </div>
-              <button id="add">add</button>
+              <button id="add" class="btn-primary" title="add">add</button>
             </div>
 
             <div id="members-list-container">
@@ -96,6 +93,6 @@
     </div>
     <!-- end::container -->
 
-    <script src="js/popup.js"></script>
+    <script src="popup.js"></script>
   </body>
 </html>

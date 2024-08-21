@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "crm-rota",
-  "version": "1.0",
-  "description": "A Chrome extension for organizing CRM team rotation.",
+  "version": "1.0.0",
+  "description": "A Chrome extension to automate the manual organization of CRM team members' rota schedule.",
   "permissions": ["storage"],
 
   "action": {
@@ -14,16 +14,6 @@
     }
   },
 
-  "background": {
-    "service_worker": "background.js"
-  },
-
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"]
-    }
-  ],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self';"
   }
