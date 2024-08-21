@@ -105,7 +105,7 @@ submit.addEventListener("click", () => {
 
   // if input is empty, return
   if (textareaInput.value.trim() === "") {
-    homeAlert.querySelector(".alert-value").innerText = "input is empty.";
+    homeAlert.querySelector(".alert-value").innerText = "input is empty";
     homeAlert.style.display = "flex";
     return;
   }
@@ -157,16 +157,23 @@ submit.addEventListener("click", () => {
 
   // separate inputs by title
   const separatedInputs = {};
-
   let currentTitle = "";
-  lines.forEach((line) => {
+
+  for (const line of lines) {
     if (titleEmojis.some((emoji) => line.startsWith(emoji))) {
       currentTitle = line;
       separatedInputs[currentTitle] = [];
     } else {
+      // check if there is a valid title set
+      if (!currentTitle) {
+        homeAlert.querySelector(".alert-value").innerText = "invalid input";
+        homeAlert.style.display = "flex";
+        return;
+      }
+      // push line to the current title's array
       separatedInputs[currentTitle].push(line);
     }
-  });
+  }
 
   // GROUP ACCORDING TO COUNT
   function groupAndSortNames(inputLine) {
@@ -500,7 +507,7 @@ add.addEventListener("click", () => {
     const nameExists = Object.values(members).some((memberList) => memberList.includes(name));
 
     if (nameExists) {
-      membersAlert.querySelector(".alert-value").innerText = "member already exists.";
+      membersAlert.querySelector(".alert-value").innerText = "member already exists";
       membersAlert.style.display = "flex";
       return;
     } else {
@@ -511,7 +518,7 @@ add.addEventListener("click", () => {
       updateMembersList();
     }
   } else {
-    membersAlert.querySelector(".alert-value").innerText = "enter name and shift.";
+    membersAlert.querySelector(".alert-value").innerText = "enter name and shift";
     membersAlert.style.display = "flex";
     return;
   }
